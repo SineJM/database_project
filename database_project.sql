@@ -1,4 +1,4 @@
--- Drop
+-- DROP
 DROP TABLE IF EXISTS database_project.Venues CASCADE;
 DROP TABLE IF EXISTS database_project.customers CASCADE;
 DROP TABLE IF EXISTS database_project.events CASCADE;
