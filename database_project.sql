@@ -277,7 +277,7 @@ VALUES
    (8, '2024-07-25', '19:00', 12000);
 
 
--- Update TotalTicketsSold and TotalRevenue for each Event Host
+-- Update TotalTicketsSold and TotalRevenue for each Event Host!
 UPDATE database_project.Event_host AS eh
 SET TotalTicketsSold = (
         SELECT COALESCE(SUM(r.NumTickets), 0)
