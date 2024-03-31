@@ -1,4 +1,4 @@
--- DROP
+-- Drop
 DROP TABLE IF EXISTS database_project.Venues CASCADE;
 DROP TABLE IF EXISTS database_project.customers CASCADE;
 DROP TABLE IF EXISTS database_project.events CASCADE;
@@ -18,6 +18,7 @@ CREATE TABLE database_project.Venues (
    GoogleMapsLink VARCHAR(255)
 );
 
+
 -- Insert sample data into Venues table
 INSERT INTO database_project.Venues (Name, Location, Capacity,GoogleMapsLink)
 VALUES
@@ -29,6 +30,7 @@ VALUES
    ('Chang Arena', 'Buriram', 30000, 'https://www.google.com/maps?q=Chang+Arena'),
    ('CentralPlaza WestGate', 'Nonthaburi', 20000, 'https://www.google.com/maps?q=CentralPlaza+WestGate'),
    ('CentralPlaza Lardprao', 'Bangkok', 25000, 'https://www.google.com/maps?q=CentralPlaza+Lardprao');
+
 
 -- Create Sellers table
 CREATE TABLE database_project.Event_host(
@@ -42,6 +44,7 @@ CREATE TABLE database_project.Event_host(
    TotalTicketsSold INTEGER DEFAULT 0,
    TotalRevenue DECIMAL(10, 2) DEFAULT 0.00
 );
+
 
 -- Insert sample data into Sellers table
 INSERT INTO database_project.Event_host (FirstName, LastName, Email, Phone, CompanyName, Address)
@@ -67,6 +70,7 @@ CREATE TABLE database_project.Events (
    CONSTRAINT unique_event UNIQUE (EventID, Date, Time) -- Unique combination of EventID, Date, and Time
 );
 
+
 -- Insert sample data into Events table
 INSERT INTO database_project.Events (Name, VenueID, HostID, Date, Time, AvailableSeats, PricePerTicket)
 VALUES
@@ -78,6 +82,7 @@ VALUES
    ('Coldplay: A Head Full of Dreams Tour', 2, 6, '2024-07-10', '19:30', 15000, 3000),
    ('Bruno Mars: 24K Magic World Tour', 7, 1, '2024-12-01', '20:30', 10000, 3500),
    ('Ariana Grande: Sweetener World Tour', 8, 2, '2024-07-25', '19:00', 12000, 2800);
+
 
 -- Create Customers table
 CREATE TABLE database_project.Customers (
@@ -91,6 +96,7 @@ CREATE TABLE database_project.Customers (
    Address TEXT
 );
 
+
 -- Create Reservations table
 CREATE TABLE database_project.Reservations (
    ReservationID SERIAL PRIMARY KEY,
@@ -101,6 +107,7 @@ CREATE TABLE database_project.Reservations (
    TotalPrice DECIMAL(10, 2) NOT NULL CHECK (TotalPrice >= 0),
    ReservationDate DATE NOT NULL DEFAULT CURRENT_DATE
 );
+
 
 -- Create Seats table
 CREATE TABLE database_project.Seats (
@@ -122,6 +129,7 @@ CREATE TABLE database_project.Payments (
    Status VARCHAR(20) NOT NULL
 );
 
+
 -- Create ShowTimes table
 CREATE TABLE database_project.ShowTimes (
    ShowtimeID SERIAL PRIMARY KEY,
@@ -131,6 +139,7 @@ CREATE TABLE database_project.ShowTimes (
    Capacity INTEGER NOT NULL,
    FOREIGN KEY (EventID, Date, Time) REFERENCES database_project.Events(EventID, Date, Time)
 );
+
 
 -- SQL Function to reserve tickets
 CREATE OR REPLACE FUNCTION reserve_tickets(p_customer_id INTEGER, p_event_id INTEGER, p_num_tickets INTEGER)
@@ -158,20 +167,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- SQL Function to cancel reservation
 CREATE OR REPLACE FUNCTION cancel_reservation(p_reservation_id INTEGER)
 RETURNS VOID AS $$
 DECLARE
-   v_event_id INTEGER;
-   v_num_tickets INTEGER;
+   v_event_id INTEGER; v_num_tickets INTEGER;
 BEGIN
    -- Get event ID and number of tickets for the reservation
    SELECT EventID, NumTickets INTO v_event_id, v_num_tickets
    FROM database_project.Reservations
    WHERE ReservationID = p_reservation_id;
-   IF NOT FOUND THEN
-       RAISE EXCEPTION 'Reservation with ID % does not exist', p_reservation_id;
-   END IF;
+   IF NOT FOUND THEN RAISE EXCEPTION 'Reservation with ID % does not exist', p_reservation_id; END IF;
 
    -- Increase available seats for the event
    UPDATE database_project.Events
@@ -184,15 +191,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- Insert sample data into Customers table
 INSERT INTO database_project.Customers (FirstName, LastName, Gender, Birthday, Email, Phone, Address)
 VALUES
    ('Peter', 'Parker', 'Male', '1990-05-10', 'peter.parker@example.com', '+1234567890', '123 Main St, City'),
-   ('Jane', 'Smith', 'Female', '1985-08-20', 'jane.smith@example.com', '+1987654321', '456 Elm St, Town'),
-   ('Alice', 'Johnson', 'Female', '1992-03-15', 'alice.johnson@example.com', '+1122334455', '789 Oak St, City'),
-   ('Bob', 'Williams', 'Male', '1978-11-25', 'bob.williams@example.com', '+9988776655', '321 Maple Ave, Town'),
-   ('Sarah', 'Davis', 'Female', '1989-12-05', 'sarah.davis@example.com', '+1234567890', '123 Oak St, City'),
-   ('Chris', 'Martinez', 'Male', '1995-07-18', 'chris.martinez@example.com', '+1987654321', '456 Maple Ave, Town');
+   ('Jane', 'Smith', 'Female', '1985-08-20', 'jane.smith@example.com', '+1987654321', '456 Silom St, Town'),
+   ('Alice', 'Johnson', 'Female', '1992-03-15', 'alice.johnson@example.com', '+1122334455', '789 Chatuchak St, City'),
+   ('Bob', 'Williams', 'Male', '1978-11-25', 'bob.williams@example.com', '+9988776655', '321 Ratchada Ave, Town'),
+   ('Sarah', 'Davis', 'Female', '1989-12-05', 'sarah.davis@example.com', '+1234567890', '123 Silom St, City'),
+   ('Chris', 'Martinez', 'Male', '1995-07-18', 'chris.martinez@example.com', '+1987654321', '456 Sukhumvit Ave, Town'),
+   ('James', 'Bone', 'Male', '1982-04-06', 'james.bone@example.com', '+1987334321', '729 Sukhumvit St, City'),
+   ('Frank', 'Jones', 'Male', '1988-10-22', 'frank.jones@example.com', '+9456876655', '321 Chatuchak Ave, Town'),
+   ('Rose', 'Mary', 'Female', '1989-12-05', 'rose.mary@example.com', '+1234852890', '123 Ratchaprasong St, City'),
+   ('Paul', 'Mars', 'Male', '1995-07-18', 'paul.mars@example.com', '+1984854321', '456 Thonglor Ave, Town');
 
 
 -- Insert sample data into Reservations table
@@ -202,7 +214,7 @@ VALUES
    (2, 2, 2, 3, 30.00, '2024-03-28'),
    (3, 3, 3, 4, 6000.00, '2024-03-29'),
    (4, 4, 4, 2, 4000.00, '2024-03-30'),
-   (5, 5, 5, 3, 6000.00, '2024-04-01'),
+   (5, 5, 5, 3, 6000.00,- '2024-04-01'),
    (6, 6, 6, 4, 12000.00, '2024-04-02'),
    (1, 7, 1, 2, 7000.00, '2024-04-03'),
    (2, 8, 2, 3, 8400.00, '2024-04-04');
@@ -238,6 +250,7 @@ VALUES
    (8, 'C2', 'Available'),
    (8, 'D1', 'Reserved');
 
+
 -- Insert sample data into Payments table
 INSERT INTO database_project.Payments (ReservationID, Amount, PaymentDate, PaymentMethod, TransactionID, Status)
 VALUES
@@ -250,6 +263,7 @@ VALUES
    (7, 7000.00, '2024-04-03', 'Credit Card', 'TXN910111', 'Completed'),
    (8, 8400.00, '2024-04-04', 'PayPal', 'TXN121314', 'Completed');
 
+
 -- Insert sample data into ShowTimes table
 INSERT INTO database_project.ShowTimes (EventID, Date, Time, Capacity)
 VALUES
@@ -261,3 +275,23 @@ VALUES
    (6, '2024-07-10', '19:30', 15000),
    (7, '2024-12-01', '20:30', 10000),
    (8, '2024-07-25', '19:00', 12000);
+
+
+-- Update TotalTicketsSold and TotalRevenue for each Event Host
+UPDATE database_project.Event_host AS eh
+SET TotalTicketsSold = (
+        SELECT COALESCE(SUM(r.NumTickets), 0)
+        FROM database_project.Reservations AS r
+        WHERE r.HostID = eh.HostID
+    ),
+    TotalRevenue = (
+        SELECT COALESCE(SUM(r.TotalPrice), 0)
+        FROM database_project.Reservations AS r
+        WHERE r.HostID = eh.HostID
+    )
+WHERE eh.HostID IN (
+        SELECT DISTINCT HostID
+        FROM database_project.Reservations
+    );
+
+
